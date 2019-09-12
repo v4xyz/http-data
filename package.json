@@ -1,0 +1,31 @@
+{
+  "name": "http-data",
+  "version": "1.0.0",
+  "description": "一个简单通用web数据持久化工具 | a simple & handy web data persistence toolkit.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/app.js",
+    "debug": "node --inspect src/app.js",
+    "debug-brk": "node --inspect-brk src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/v4xyz/http-data.git"
+  },
+  "author": "v4xyz@126.com",
+  "license": "GPL v2",
+  "dependencies": {
+    "@koa/cors": "^2.2.3",
+    "koa": "^2.7.0",
+    "koa-body": "^4.1.0",
+    "koa-logger": "^3.2.0",
+    "koa-router": "^7.4.0",
+    "lodash": "^4.17.15",
+    "normalizr": "^3.4.0",
+    "redux": "^4.0.4",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^2.3.0",
+    "warehouse": "^2.2.0"
+  }
+}
