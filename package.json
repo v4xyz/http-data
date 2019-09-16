@@ -16,7 +16,6 @@
   "author": "v4xyz@126.com",
   "license": "GPL v2",
   "dependencies": {
-    "@koa/cors": "^2.2.3",
     "koa": "^2.7.0",
     "koa-body": "^4.1.0",
     "koa-logger": "^3.2.0",

@@ -4,32 +4,31 @@
  */
 const debug = require('debug')('model-proxy');
 const router = require('koa-router')();
-const controller = require('../controller');
 const utils = require('../util');
 
-async function handleModelEevnt(ctx, next) {
-	const params = {
-		'GET': ctx.query,
-		'POST': ctx.request.body,
-	};
-  // console.log(ctx.method)
-
-  try {
-		if (ctx.isTargetModel) {
-			const ctrlMethod = utils.camelCase(ctx.path);
-			console.log(controller[ctrlMethod], params[ctx.method]);
-    	ctx.body = await controller[ctrlMethod](params[ctx.method]);
-			// ctx.body = `${ ctx.params.model } 详情`;
-		}
-		next();
-  } catch (e) {
-    ctx.body = e;
-  }
-}
-
-module.exports = ({MODEL_SCHEMA}) => {
+module.exports = ({schemaNames, controller}) => {
 	// console.log(MODEL_SCHEMA)
-	const models = Object.keys(MODEL_SCHEMA);
+	const models = schemaNames.map(item => utils.camelCase(item));
+
+	async function handleModelEevnt(ctx, next) {
+		const params = {
+			'GET': ctx.query,
+			'POST': ctx.request.body,
+		};
+	  // console.log(ctx.method)
+
+	  try {
+			if (ctx.isTargetModel) {
+				const ctrlMethod = utils.camelCase(ctx.path);
+				console.log(controller[ctrlMethod], params[ctx.method]);
+	    	ctx.body = controller[ctrlMethod] && (await controller[ctrlMethod](params[ctx.method]));
+				// ctx.body = `${ ctx.params.model } 详情`;
+			}
+			next();
+	  } catch (e) {
+	    ctx.body = e;
+	  }
+	}
 
 	return router
 		.param('model', (model, ctx, next) => {
@@ -39,7 +38,7 @@ module.exports = ({MODEL_SCHEMA}) => {
 			console.log(`代理 ${ modelName } CURD 操作 ===> `, isTargetModel)
 			ctx.isTargetModel = isTargetModel;
 
-			if (isTargetModel && (JSON.stringify(MODEL_SCHEMA[modelName]) !== '{}')) {							
+			if (isTargetModel) {							
 				ctx.taretModel = modelName;
 			} else {
 				ctx.body = '未定义model';
