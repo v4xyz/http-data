@@ -113,6 +113,8 @@ const createReducers = ({ schemaNames } ) => {
 
 		return acc;
 	}, {});
+
+	return modelReducer;
 };
 
 module.exports = {

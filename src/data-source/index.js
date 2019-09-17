@@ -3,7 +3,8 @@ const data_persistence = require('./warehouse-database');
 const { createDbInstance } = data_persistence;
 // 数据缓冲层
 const data_cache = require('./redux-cache');
-const { createActionHandler } = data_cache;
+const { createActionHandler, loadDb } = data_cache;
 
 exports.createDbInstance = createDbInstance;
 exports.createActionHandler = createActionHandler;
+exports.loadDb = loadDb;

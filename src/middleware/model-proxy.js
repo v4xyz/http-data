@@ -8,7 +8,7 @@ const utils = require('../util');
 
 module.exports = ({schemaNames, controller}) => {
 	// console.log(MODEL_SCHEMA)
-	const models = schemaNames.map(item => utils.camelCase(item));
+	const models = schemaNames;
 
 	async function handleModelEevnt(ctx, next) {
 		const params = {
@@ -21,7 +21,12 @@ module.exports = ({schemaNames, controller}) => {
 			if (ctx.isTargetModel) {
 				const ctrlMethod = utils.camelCase(ctx.path);
 				console.log(controller[ctrlMethod], params[ctx.method]);
-	    	ctx.body = controller[ctrlMethod] && (await controller[ctrlMethod](params[ctx.method]));
+				
+				if (controller[ctrlMethod]) {
+		    	ctx.body = await controller[ctrlMethod](params[ctx.method]);
+				} else {
+					ctx.body = `未配置controller: ${ ctrlMethod }`
+				}
 				// ctx.body = `${ ctx.params.model } 详情`;
 			}
 			next();

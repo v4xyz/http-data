@@ -1,4 +1,4 @@
-const { schema } = require('normalizr');
+const { normalize, schema } = require('normalizr');
 const utils = require('../../util');
 // 获取具体ACTION_TYPE字符串
 const getActionTypeStr = (schemaName, type) => {
@@ -27,15 +27,12 @@ const getSchemaAction = schemaName => {
 const createActions = ({ schemaNames }) => {
 	// console.log(schemaNames)
 	// 根据warehouse schema 映射 normalize entity
-	const _SCHEMAS = schemaNames
+	const SCHEMAS = schemaNames
 		.reduce((acc, schemaName) => {
 			acc[schemaName] = new schema.Entity('list', undefined, { idAttribute: '_id' });
 
 			return acc;
 		}, {});
-	const SCHEMAS = {
-		..._SCHEMAS
-	};
 	// 生成默认ACTION_TYPE
 	const DEFAULT_ACTION_TYPE = schemaNames
 		.map(getSchemaAction)
@@ -128,10 +125,35 @@ const createActions = ({ schemaNames }) => {
 	// console.log(_ACTIONS)
 
 	const ACTIONS = {
+		loadDb: ({ db, DB_MODEL }) => {
+
+			return (dispatch) => {
+
+				db.load().then((data) => {
+					const dbData = schemaNames.reduce((acc, schemaName) => {
+						const schemaNameCCase = utils.camelCase(schemaName);					
+						acc[schemaNameCCase] = normalize(DB_MODEL[schemaName].toArray(), [SCHEMAS[schemaName]])
+
+						return acc;
+					}, {})
+
+					console.log('database loaded ...');
+					dispatch({
+						type: 'DATABASE_LOADED',
+						params: {
+							...dbData,
+						},
+					})
+				});
+			};
+		},		
 		..._ACTIONS,
 	};
 
-	return ACTIONS;
+	return {
+		ACTIONS,
+		SCHEMAS
+	};
 };
 
 module.exports = {

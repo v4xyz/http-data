@@ -10,10 +10,11 @@ class HttpData {
 		const { dbPath, schemas } = params;	
 		const schemaNames = Object.keys(schemas);
 		this.schemaNames = schemaNames;
-		this.dbInstance = createDbInstance({ db, schemas, schemaNames });
+		this.dbInstance = createDbInstance({ dbPath, schemas, schemaNames });
 		const { db, DB_MODEL } = this.dbInstance;
 		this.actionHandler = createActionHandler({ db, DB_MODEL, schemas, schemaNames });
 
+		this.actionHandler.loadDb({ db, DB_MODEL });
 		console.log(dbPath, schemas);
 
 	}

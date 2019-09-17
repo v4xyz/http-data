@@ -1,3 +1,4 @@
+const { denormalize, schema } = require('normalizr');
 const utils = require('../../util');
 
 /**
@@ -5,7 +6,7 @@ const utils = require('../../util');
  * @param  {[type]} store [description]
  * @return {[type]}       [description]
  */
-exports.syncWithDb = ({ db, DB_MODEL, schemas }) => {
+exports.syncWithDb = ({ db, DB_MODEL, schemas, SCHEMAS }) => {
 
 	return store => next => action => {
 		if (action.model) {
@@ -16,10 +17,14 @@ exports.syncWithDb = ({ db, DB_MODEL, schemas }) => {
 			const schema = utils.getWrappedSchema(schemas[model]);
 			const primaryKey = schema.primaryKey;
 			const dbModel = DB_MODEL[model];
+			const state = store.getState();
+			const subState =state[modelCCase];
+			const { result, entities } = subState;			
+			const modelList = denormalize(result, [SCHEMAS[model]], entities)
 			console.log(model, typeSuffix);
 			const stdHandlers = {
 				'LIST': () => {
-
+					Object.assign(action.params, {modelList})
 					return next(action);
 				},
 				'DETAIL': () => {
@@ -46,6 +51,8 @@ exports.syncWithDb = ({ db, DB_MODEL, schemas }) => {
 									...action,
 									data,
 								});
+							}).catch(e => {
+								console.log(e)
 							});
 					}
 
