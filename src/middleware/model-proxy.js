@@ -6,24 +6,34 @@ const debug = require('debug')('model-proxy');
 const router = require('koa-router')();
 const utils = require('../util');
 
-module.exports = ({schemaNames, controller}) => {
+module.exports = ({schemaNames, controller, handleRequestParams, handleResponseData}) => {
 	// console.log(MODEL_SCHEMA)
 	const models = schemaNames;
 
 	async function handleModelEevnt(ctx, next) {
-		const params = {
+		let params = ({
 			'GET': ctx.query,
 			'POST': ctx.request.body,
-		};
+		})[ctx.method];
 	  // console.log(ctx.method)
+	  if (params && (params._id === '')) {
+	  	delete params._id
+	  }
 
 	  try {
 			if (ctx.isTargetModel) {
 				const ctrlMethod = utils.camelCase(ctx.path);
-				console.log(controller[ctrlMethod], params[ctx.method]);
+				const paramsHandler = handleRequestParams[ctrlMethod];
+				const dataHandler = handleResponseData[ctrlMethod];
+				if (paramsHandler) {
+					params = paramsHandler(params, ctx)
+				}
+
+				console.log(controller[ctrlMethod], params);
 				
 				if (controller[ctrlMethod]) {
-		    	ctx.body = await controller[ctrlMethod](params[ctx.method]);
+					const respBody = await controller[ctrlMethod](params)
+			    	ctx.body = dataHandler ? dataHandler(respBody, ctx) : respBody;
 				} else {
 					ctx.body = `未配置controller: ${ ctrlMethod }`
 				}

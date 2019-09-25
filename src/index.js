@@ -19,12 +19,14 @@ class HttpData {
 
 	}
 
-	configKoaMiddleware(config) {
-		console.log(config)
+	configKoaMiddleware({ handleRequestParams = {}, handleResponseData = {} }) {
+
 		const { actionHandler, schemaNames } = this
 		return modelProxy({
 			controller: actionHandler,
-			schemaNames
+			schemaNames,
+			handleRequestParams,
+			handleResponseData,
 		})
 	}
 
