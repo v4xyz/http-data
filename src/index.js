@@ -33,6 +33,11 @@ class HttpData {
 	configReduxMiddleware() {
 
 	}
+
+	getDbInstance() {
+		
+		return this.dbInstance;
+	}
 };
 
 module.exports = HttpData;
